@@ -1,7 +1,19 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git remote add:*)"
+      "Bash(git remote add:*)",
+      "Bash(python3:*)",
+      "Bash(npm install:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npx tsc:*)",
+      "Bash(curl:*)",
+      "Bash(createdb keystone)",
+      "Bash(/opt/homebrew/opt/postgresql@15/bin/createdb:*)",
+      "Bash(npx prisma db push:*)",
+      "Bash(/opt/homebrew/opt/postgresql@15/bin/psql:*)"
     ]
   }
 }

@@ -1,0 +1,297 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum HabitType {
+  POSITIVE
+  NEGATIVE
+  NEUTRAL
+}
+
+enum HabitStatus {
+  ACTIVE
+  PAUSED
+  ARCHIVED
+}
+
+enum RankTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+  DIAMOND
+  MASTER
+  GRANDMASTER
+}
+
+enum XPSource {
+  HABIT_COMPLETION
+  STREAK_BONUS
+  WEEKLY_BONUS
+  ACHIEVEMENT
+  LEVEL_UP
+}
+
+// ============================================================================
+// AUTH MODELS (NextAuth)
+// ============================================================================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  timezone      String    @default("America/New_York")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  accounts      Account[]
+  sessions      Session[]
+  habits        Habit[]
+  weeks         Week[]
+  xpLogs        XPLog[]
+  stats         UserStats?
+  achievements  Achievement[]
+  streaks       HabitStreak[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ============================================================================
+// HABIT MODELS
+// ============================================================================
+
+model Habit {
+  id          String      @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  type        HabitType   @default(POSITIVE)
+  status      HabitStatus @default(ACTIVE)
+  color       String      @default("#6366f1")
+  icon        String      @default("star")
+  sortOrder   Int         @default(0)
+  xpValue     Int         @default(10)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  completions HabitCompletion[]
+  snapshots   WeekHabitSnapshot[]
+  streaks     HabitStreak[]
+
+  @@index([userId, status])
+  @@map("habits")
+}
+
+// ============================================================================
+// WEEK & COMPLETION MODELS
+// ============================================================================
+
+model Week {
+  id        String   @id @default(cuid())
+  userId    String
+  startDate DateTime
+  endDate   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  snapshots  WeekHabitSnapshot[]
+  completions HabitCompletion[]
+  score      WeekScore?
+
+  @@unique([userId, startDate])
+  @@index([userId])
+  @@map("weeks")
+}
+
+model WeekHabitSnapshot {
+  id          String      @id @default(cuid())
+  weekId      String
+  habitId     String
+  name        String
+  description String?
+  type        HabitType
+  color       String
+  icon        String
+  sortOrder   Int
+  xpValue     Int
+  createdAt   DateTime    @default(now())
+
+  // Relations
+  week   Week  @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  habit  Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@unique([weekId, habitId])
+  @@map("week_habit_snapshots")
+}
+
+model HabitCompletion {
+  id        String   @id @default(cuid())
+  weekId    String
+  habitId   String
+  dayIndex  Int      // 0=Monday, 6=Sunday
+  completed Boolean  @default(true)
+  xpEarned  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  week  Week  @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@unique([weekId, habitId, dayIndex])
+  @@index([weekId])
+  @@index([habitId])
+  @@map("habit_completions")
+}
+
+model WeekScore {
+  id              String   @id @default(cuid())
+  weekId          String   @unique
+  totalCompletions Int     @default(0)
+  possibleCompletions Int  @default(0)
+  percentage      Float    @default(0)
+  xpEarned        Int      @default(0)
+  bonusXp         Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  week Week @relation(fields: [weekId], references: [id], onDelete: Cascade)
+
+  @@map("week_scores")
+}
+
+// ============================================================================
+// XP & STATS MODELS
+// ============================================================================
+
+model XPLog {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Int
+  source    XPSource
+  sourceId  String?  // Reference to habit, achievement, etc.
+  note      String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("xp_logs")
+}
+
+model UserStats {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  totalXp            Int      @default(0)
+  level              Int      @default(1)
+  rank               RankTier @default(BRONZE)
+  currentStreak      Int      @default(0)
+  longestStreak      Int      @default(0)
+  totalCompletions   Int      @default(0)
+  totalHabitsCreated Int      @default(0)
+  weeksCompleted     Int      @default(0)
+  perfectWeeks       Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_stats")
+}
+
+// ============================================================================
+// ACHIEVEMENTS & STREAKS
+// ============================================================================
+
+model Achievement {
+  id          String   @id @default(cuid())
+  userId      String
+  code        String   // Unique identifier like "first_habit", "streak_7"
+  unlockedAt  DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, code])
+  @@index([userId])
+  @@map("achievements")
+}
+
+model HabitStreak {
+  id            String   @id @default(cuid())
+  userId        String
+  habitId       String
+  currentStreak Int      @default(0)
+  longestStreak Int      @default(0)
+  lastCompleted DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, habitId])
+  @@map("habit_streaks")
+}
