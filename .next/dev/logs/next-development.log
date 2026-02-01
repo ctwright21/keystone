@@ -1,0 +1,56 @@
+[00:54:32.644] Server  ERROR   ⨯ Error: Cannot find module 'next/dist/client/components/builtin/global-not-found'
+Require stack:
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/dev/on-demand-entry-handler.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/dev/hot-reloader-turbopack.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/router-server.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/start-server.js
+[00:54:32.737] Server  ERROR   Error: Cannot find module 'next/dist/pages/_error'
+Require stack:
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/dev/on-demand-entry-handler.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/dev/hot-reloader-turbopack.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/router-server.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/start-server.js
+[00:54:32.995] Server  ERROR   ⨯ Error: Cannot find module 'next/dist/pages/_error'
+Require stack:
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/dev/on-demand-entry-handler.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/dev/hot-reloader-turbopack.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/router-server.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/start-server.js
+[00:54:33.092] Server  ERROR   Error: Cannot find module 'next/dist/pages/_error'
+Require stack:
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/dev/on-demand-entry-handler.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/dev/hot-reloader-turbopack.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/router-server.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/start-server.js
+[00:54:33.465] Server  ERROR   ⨯ Error: Cannot find module 'next/dist/client/components/builtin/global-not-found'
+Require stack:
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/dev/on-demand-entry-handler.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/dev/hot-reloader-turbopack.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/router-server.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/start-server.js
+[00:54:33.625] Server  ERROR   Error: Cannot find module 'next/dist/pages/_error'
+Require stack:
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/dev/on-demand-entry-handler.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/dev/hot-reloader-turbopack.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/router-server.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/start-server.js
+[00:54:33.700] Server  ERROR   ⨯ Error: Cannot find module 'next/dist/pages/_error'
+Require stack:
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/dev/on-demand-entry-handler.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/dev/hot-reloader-turbopack.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/router-server.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/start-server.js
+[00:54:33.809] Server  ERROR   Error: Cannot find module 'next/dist/pages/_error'
+Require stack:
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/dev/on-demand-entry-handler.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/dev/hot-reloader-turbopack.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/router-server.js
+- /Users/chriswright/Desktop/apps/keystone/node_modules/next/dist/server/lib/start-server.js
