@@ -3,3 +3,16 @@
 [00:00:05.795] Server  LOG     ○ Compiling /history ...
 [00:00:07.840] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [00:00:30.999] Server  LOG     ○ Compiling /achievements ...
+[09:13:49.460] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[09:15:37.357] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[09:16:00.998] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[09:16:50.973] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[09:17:56.683] Server  LOG     ✓ Compiled in 234ms
+[09:20:54.361] Server  LOG     ✓ Compiled in 265ms
+[09:21:07.629] Server  LOG     ✓ Compiled in 93ms
+[09:21:14.899] Server  LOG     ✓ Compiled in 141ms
+[09:21:23.149] Server  LOG     ✓ Compiled in 99ms
+[09:21:38.910] Server  LOG     ✓ Compiled in 138ms
+[09:24:47.460] Server  LOG     ✓ Compiled in 150ms
+[09:24:53.847] Server  LOG     ✓ Compiled in 96ms
+[09:25:04.139] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold

@@ -59,7 +59,7 @@ model User {
   password      String?
   role          UserRole  @default(USER)
   timezone      String    @default("America/New_York")
-  weekStartDay  Int       @default(0) // 0 = Sunday, 1 = Monday
+  weekStartDay  Int       @default(1) // 0 = Sunday, 1 = Monday
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

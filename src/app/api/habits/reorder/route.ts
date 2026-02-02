@@ -33,13 +33,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get user timezone for finding current week
+    // Get user timezone and week start preference for finding current week
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { timezone: true },
+      select: { timezone: true, weekStartDay: true },
     });
     const timezone = user?.timezone || "America/New_York";
-    const weekStart = getWeekStartInTimezone(timezone);
+    const weekStartDay = user?.weekStartDay ?? 1;
+    const weekStart = getWeekStartInTimezone(timezone, weekStartDay);
 
     // Find current week
     const currentWeek = await prisma.week.findUnique({

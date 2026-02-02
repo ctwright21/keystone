@@ -48,12 +48,13 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const validatedData = createHabitSchema.parse(body);
 
-    // Get user's timezone
+    // Get user's timezone and week start preference
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { timezone: true },
+      select: { timezone: true, weekStartDay: true },
     });
     const timezone = user?.timezone || "America/New_York";
+    const weekStartDay = user?.weekStartDay ?? 1;
 
     // Get current max sort order
     const maxSortOrder = await prisma.habit.aggregate({
@@ -72,8 +73,8 @@ export async function POST(req: NextRequest) {
     });
 
     // Add habit to current week's snapshots if week exists
-    const weekStart = getWeekStartInTimezone(timezone);
-    const weekEnd = getWeekEndInTimezone(timezone);
+    const weekStart = getWeekStartInTimezone(timezone, weekStartDay);
+    const weekEnd = getWeekEndInTimezone(timezone, weekStartDay);
 
     let currentWeek = await prisma.week.findUnique({
       where: {

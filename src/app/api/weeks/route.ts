@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
       select: { weekStartDay: true },
     });
 
-    const weekStartDay = user?.weekStartDay ?? 0; // 0 = Sunday, 1 = Monday
+    const weekStartDay = user?.weekStartDay ?? 1; // 0 = Sunday, 1 = Monday
 
     const { searchParams } = new URL(req.url);
     const limit = parseInt(searchParams.get("limit") || "10");

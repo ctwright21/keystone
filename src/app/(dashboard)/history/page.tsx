@@ -541,7 +541,7 @@ export default function HistoryPage() {
   }
 
   // Get weekStartDay from API response (default to Sunday)
-  const weekStartDay = data?.weekStartDay ?? 0;
+  const weekStartDay = data?.weekStartDay ?? 1;
 
   // Helper to get week range text for past weeks
   function getPastWeekLabel(weeksAgo: number) {

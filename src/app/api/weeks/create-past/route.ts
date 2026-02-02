@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       select: { weekStartDay: true },
     });
 
-    const weekStartDay = user?.weekStartDay ?? 0; // 0 = Sunday, 1 = Monday
+    const weekStartDay = user?.weekStartDay ?? 1; // 0 = Sunday, 1 = Monday
 
     // Calculate the start and end date for the past week
     const now = new Date();

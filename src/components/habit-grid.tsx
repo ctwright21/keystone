@@ -79,7 +79,7 @@ function HabitCheckbox({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        "w-8 h-8 rounded-sm flex items-center justify-center transition-all duration-200 border-2",
+        "w-7 h-7 rounded-sm flex items-center justify-center transition-all duration-200 border-2",
         isCompleted
           ? "bg-[#00F0FF] border-[#00F0FF] text-[#0A0A0F] shadow-[0_0_20px_rgba(0,240,255,0.4)]"
           : isToday
@@ -89,7 +89,7 @@ function HabitCheckbox({
           : "border-[#2A2A38] bg-transparent opacity-40 cursor-not-allowed"
       )}
     >
-      {isCompleted && <Check className="w-4 h-4" strokeWidth={3} />}
+      {isCompleted && <Check className="w-3.5 h-3.5" strokeWidth={3} />}
     </button>
   );
 }
@@ -139,56 +139,61 @@ function SortableHabitRow({
         "group border-b border-[#2A2A38] hover:bg-[#1A1A24]/50 transition-colors",
         isDragging && "opacity-50 bg-[#1A1A24]"
       )}
-      onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => setShowActions(false)}
     >
       {/* Drag handle + Habit name */}
-      <td className="py-3 pr-4">
-        <div className="flex items-center gap-2">
+      <td
+        className="py-2 pr-2 relative"
+        onMouseEnter={() => setShowActions(true)}
+        onMouseLeave={() => setShowActions(false)}
+      >
+        <div className="flex items-center gap-1.5">
           <button
             {...attributes}
             {...listeners}
-            className="text-[#6A6A7A] hover:text-[#A0A0B0] cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
-          >
-            <GripVertical className="w-4 h-4" />
-          </button>
-          {snapshot.icon && <HabitIcon name={snapshot.icon} className="w-5 h-5 text-[#A0A0B0]" />}
-          <span className="text-[#F0F0F5] text-sm font-medium truncate max-w-[180px] lg:max-w-[280px]">
-            {snapshot.name}
-          </span>
-          {/* Action buttons - show on hover */}
-          <div
             className={cn(
-              "flex items-center gap-1 ml-2 transition-opacity",
+              "text-[#6A6A7A] hover:text-[#A0A0B0] cursor-grab active:cursor-grabbing transition-opacity flex-shrink-0",
               showActions ? "opacity-100" : "opacity-0"
             )}
           >
-            <button
-              onClick={() => onEdit(snapshot.habitId)}
-              className="p-1.5 text-[#6A6A7A] hover:text-[#00F0FF] hover:bg-[#00F0FF]/10 rounded transition-colors"
-              title="Edit"
-            >
-              <Pencil className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={() => onPause(snapshot.habitId)}
-              className="p-1.5 text-[#6A6A7A] hover:text-[#FBBF24] hover:bg-[#FBBF24]/10 rounded transition-colors"
-              title="Pause"
-            >
-              <Pause className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={() => {
-                if (confirm("Delete this habit?")) {
-                  onDelete(snapshot.habitId);
-                }
-              }}
-              className="p-1.5 text-[#6A6A7A] hover:text-[#EF4444] hover:bg-[#EF4444]/10 rounded transition-colors"
-              title="Delete"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-            </button>
-          </div>
+            <GripVertical className="w-4 h-4" />
+          </button>
+          {snapshot.icon && <HabitIcon name={snapshot.icon} className="w-4 h-4 text-[#A0A0B0] flex-shrink-0" />}
+          <span className="text-[#F0F0F5] text-sm font-medium truncate max-w-[120px] sm:max-w-[150px] lg:max-w-[200px]">
+            {snapshot.name}
+          </span>
+        </div>
+        {/* Action buttons - show on hover, positioned absolutely */}
+        <div
+          className={cn(
+            "absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-0.5 bg-[#12121A] rounded pl-1 transition-opacity z-10",
+            showActions ? "opacity-100" : "opacity-0 pointer-events-none"
+          )}
+        >
+          <button
+            onClick={() => onEdit(snapshot.habitId)}
+            className="p-1 text-[#6A6A7A] hover:text-[#00F0FF] hover:bg-[#00F0FF]/10 rounded transition-colors"
+            title="Edit"
+          >
+            <Pencil className="w-3 h-3" />
+          </button>
+          <button
+            onClick={() => onPause(snapshot.habitId)}
+            className="p-1 text-[#6A6A7A] hover:text-[#FBBF24] hover:bg-[#FBBF24]/10 rounded transition-colors"
+            title="Pause"
+          >
+            <Pause className="w-3 h-3" />
+          </button>
+          <button
+            onClick={() => {
+              if (confirm("Delete this habit?")) {
+                onDelete(snapshot.habitId);
+              }
+            }}
+            className="p-1 text-[#6A6A7A] hover:text-[#EF4444] hover:bg-[#EF4444]/10 rounded transition-colors"
+            title="Delete"
+          >
+            <Trash2 className="w-3 h-3" />
+          </button>
         </div>
       </td>
 
@@ -200,7 +205,7 @@ function SortableHabitRow({
         const isFuture = index > currentDayIndex;
 
         return (
-          <td key={index} className={cn("py-3 px-1 text-center", isToday && "bg-[#00F0FF]/5")}>
+          <td key={index} className={cn("py-2 px-0.5 text-center", isToday && "bg-[#00F0FF]/5")}>
             <div className="flex justify-center">
               <HabitCheckbox
                 isCompleted={isCompleted}
@@ -230,11 +235,11 @@ function PerfectDayRow({
 }) {
   return (
     <tr className="border-t-2 border-[#3A3A48] bg-[#1A1A24]/30">
-      <td className="py-3 pr-4">
-        <div className="flex items-center gap-2">
+      <td className="py-2 pr-2">
+        <div className="flex items-center gap-1.5">
           <div className="w-4" /> {/* Spacer for drag handle */}
-          <Star className="w-5 h-5 text-[#FFD700]" />
-          <span className="text-[#A0A0B0] text-sm font-semibold uppercase tracking-wide">Perfect Day</span>
+          <Star className="w-4 h-4 text-[#FFD700]" />
+          <span className="text-[#A0A0B0] text-xs font-semibold uppercase tracking-wide">Perfect Day</span>
         </div>
       </td>
       {dayNames.map((_, index) => {
@@ -244,17 +249,17 @@ function PerfectDayRow({
         const isFuture = index > currentDayIndex;
 
         return (
-          <td key={index} className={cn("py-3 px-1 text-center", isToday && "bg-[#00F0FF]/5")}>
+          <td key={index} className={cn("py-2 px-0.5 text-center", isToday && "bg-[#00F0FF]/5")}>
             <div className="flex justify-center">
               {isFuture ? (
-                <div className="w-8 h-8" />
+                <div className="w-7 h-7" />
               ) : isPerfect ? (
-                <div className="w-8 h-8 rounded-sm flex items-center justify-center bg-[#FFD700]/20 text-[#FFD700] border border-[#FFD700]/50 shadow-[0_0_20px_rgba(255,215,0,0.4)]">
-                  <Check className="w-4 h-4" strokeWidth={3} />
+                <div className="w-7 h-7 rounded-sm flex items-center justify-center bg-[#FFD700]/20 text-[#FFD700] border border-[#FFD700]/50 shadow-[0_0_20px_rgba(255,215,0,0.4)]">
+                  <Check className="w-3.5 h-3.5" strokeWidth={3} />
                 </div>
               ) : (
-                <div className="w-8 h-8 rounded-sm flex items-center justify-center text-[#6A6A7A] bg-[#22222E]/50">
-                  <X className="w-3.5 h-3.5" />
+                <div className="w-7 h-7 rounded-sm flex items-center justify-center text-[#6A6A7A] bg-[#22222E]/50">
+                  <X className="w-3 h-3" />
                 </div>
               )}
             </div>
@@ -269,7 +274,7 @@ export function HabitGrid({ week, onEditHabit }: HabitGridProps) {
   const queryClient = useQueryClient();
   const [habits, setHabits] = useState(week.snapshots);
   const currentDayIndex = week.currentDayIndex ?? 0;
-  const weekStartDay = week.weekStartDay ?? 0;
+  const weekStartDay = week.weekStartDay ?? 1;
   const dayNames = getDayNames(weekStartDay);
   const weekDates = getWeekDates(week.startDate);
 
@@ -404,19 +409,19 @@ export function HabitGrid({ week, onEditHabit }: HabitGridProps) {
         <table className="w-full">
           <thead>
             <tr className="text-[#6A6A7A] text-xs uppercase tracking-wider">
-              <th className="text-left py-3 pr-4 font-semibold">Habit</th>
+              <th className="text-left py-2 pr-2 font-semibold">Habit</th>
               {dayNames.map((day, index) => {
                 const isToday = index === currentDayIndex;
                 return (
                   <th
                     key={day}
                     className={cn(
-                      "py-3 px-1 font-semibold text-center min-w-[48px]",
+                      "py-2 px-0.5 font-semibold text-center min-w-[36px]",
                       isToday && "text-[#00F0FF] bg-[#00F0FF]/5 rounded-t-md"
                     )}
                   >
-                    <div>{day}</div>
-                    <div className={cn("text-sm mt-0.5 font-mono", isToday ? "text-[#00F0FF]" : "text-[#6A6A7A]")}>
+                    <div className="text-[10px]">{day}</div>
+                    <div className={cn("text-xs mt-0.5 font-mono", isToday ? "text-[#00F0FF]" : "text-[#6A6A7A]")}>
                       {weekDates[index]}
                     </div>
                   </th>

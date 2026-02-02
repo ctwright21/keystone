@@ -46,10 +46,11 @@ export async function PATCH(
     // This ensures changes to icon, name, color, etc. are reflected immediately
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { timezone: true },
+      select: { timezone: true, weekStartDay: true },
     });
     const timezone = user?.timezone || "America/New_York";
-    const weekStart = getWeekStartInTimezone(timezone);
+    const weekStartDay = user?.weekStartDay ?? 1;
+    const weekStart = getWeekStartInTimezone(timezone, weekStartDay);
 
     const currentWeek = await prisma.week.findUnique({
       where: {
@@ -117,6 +118,56 @@ export async function DELETE(
 
     if (!habit) {
       return NextResponse.json({ error: "Habit not found" }, { status: 404 });
+    }
+
+    // Get user's timezone and week start preference
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { timezone: true, weekStartDay: true },
+    });
+    const timezone = user?.timezone || "America/New_York";
+    const weekStartDay = user?.weekStartDay ?? 1;
+    const weekStart = getWeekStartInTimezone(timezone, weekStartDay);
+
+    // Find current week
+    const currentWeek = await prisma.week.findUnique({
+      where: {
+        userId_startDate: {
+          userId: session.user.id,
+          startDate: weekStart,
+        },
+      },
+    });
+
+    // Remove snapshot from current week and delete completions
+    if (currentWeek) {
+      // Delete completions for this habit in the current week
+      await prisma.habitCompletion.deleteMany({
+        where: {
+          weekId: currentWeek.id,
+          habitId: id,
+        },
+      });
+
+      // Delete the snapshot from the current week
+      await prisma.weekHabitSnapshot.deleteMany({
+        where: {
+          weekId: currentWeek.id,
+          habitId: id,
+        },
+      });
+
+      // Update week score's possible completions
+      const snapshotCount = await prisma.weekHabitSnapshot.count({
+        where: { weekId: currentWeek.id },
+      });
+
+      await prisma.weekScore.update({
+        where: { weekId: currentWeek.id },
+        data: {
+          possibleCompletions: snapshotCount * 7,
+        },
+      });
     }
 
     // Soft delete by archiving

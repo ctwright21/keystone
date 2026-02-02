@@ -18,7 +18,7 @@ export async function GET() {
     });
 
     const timezone = user?.timezone || "America/New_York";
-    const weekStartDay = user?.weekStartDay ?? 0; // 0 = Sunday, 1 = Monday
+    const weekStartDay = user?.weekStartDay ?? 1; // 0 = Sunday, 1 = Monday
 
     // Calculate week boundaries in user's timezone
     const weekStart = getWeekStartInTimezone(timezone, weekStartDay);
