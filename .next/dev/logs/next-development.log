@@ -257,3 +257,27 @@ See this log for the ancestor stack trace. tbody <div>
 [02:16:34.717] Server  LOG     ✓ Compiled in 165ms
 [02:16:46.109] Server  LOG     ✓ Compiled in 140ms
 [02:16:52.294] Server  LOG     ✓ Compiled in 68ms
+[02:24:36.471] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:25:24.334] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:26:40.087] Server  LOG     ✓ Compiled in 262ms
+[02:26:52.414] Server  LOG     ✓ Compiled in 153ms
+[02:27:02.154] Server  LOG     ✓ Compiled in 82ms
+[02:28:36.666] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:29:26.511] Server  LOG     ✓ Compiled in 186ms
+[02:29:38.780] Server  LOG     ✓ Compiled in 381ms
+[02:30:01.171] Server  LOG     ✓ Compiled in 88ms
+[02:30:06.060] Server  LOG     ✓ Compiled in 101ms
+[02:39:55.016] Server  LOG     ✓ Compiled in 297ms
+[02:40:01.484] Server  LOG     ✓ Compiled in 137ms
+[02:40:08.999] Server  LOG     ✓ Compiled in 177ms
+[02:40:14.291] Server  LOG     ✓ Compiled in 101ms
+[02:40:27.920] Server  LOG     ✓ Compiled in 98ms
+[02:40:33.681] Server  LOG     ✓ Compiled in 72ms
+[02:40:37.622] Server  LOG     ✓ Compiled in 136ms
+[02:40:51.554] Server  LOG     ✓ Compiled in 89ms
+[02:43:07.858] Server  LOG     ✓ Compiled in 43ms
+[02:43:27.285] Server  LOG     ✓ Compiled in 94ms
+[03:04:41.741] Server  LOG     ✓ Compiled in 84ms
+[03:04:50.511] Server  LOG     ✓ Compiled in 67ms
+[03:04:55.699] Server  LOG     ✓ Compiled in 78ms
+[03:05:02.161] Server  LOG     ✓ Compiled in 68ms

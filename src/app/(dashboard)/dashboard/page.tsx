@@ -6,6 +6,7 @@ import { Plus, Loader2, Zap } from "lucide-react";
 import { HabitGrid } from "@/components/habit-grid";
 import { AddHabitModal } from "@/components/add-habit-modal";
 import { StatsCard } from "@/components/stats-card";
+import { WeekTrophyCard } from "@/components/week-trophy-card";
 import { formatWeekRange } from "@/lib/week-utils";
 
 export default function DashboardPage() {
@@ -137,6 +138,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="space-y-6">
+          <WeekTrophyCard />
           <StatsCard />
         </div>
       </div>

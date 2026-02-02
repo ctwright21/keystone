@@ -103,6 +103,7 @@ export function AddHabitModal({ isOpen, onClose, editHabit }: AddHabitModalProps
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["habits"] });
       queryClient.invalidateQueries({ queryKey: ["currentWeek"] });
+      queryClient.invalidateQueries({ queryKey: ["weeks"] });
       onClose();
     },
     onError: (err: Error) => {

@@ -36,6 +36,7 @@ export async function GET() {
       habits: achievements.filter((a) => a.category === "habits"),
       streaks: achievements.filter((a) => a.category === "streaks"),
       completions: achievements.filter((a) => a.category === "completions"),
+      trophies: achievements.filter((a) => a.category === "trophies"),
       milestones: achievements.filter((a) => a.category === "milestones"),
       special: achievements.filter((a) => a.category === "special"),
     };

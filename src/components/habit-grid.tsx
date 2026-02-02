@@ -309,6 +309,11 @@ export function HabitGrid({ week, onEditHabit }: HabitGridProps) {
       if (!res.ok) throw new Error("Failed to reorder habits");
       return res.json();
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["currentWeek"] });
+      queryClient.invalidateQueries({ queryKey: ["habits"] });
+      queryClient.invalidateQueries({ queryKey: ["weeks"] });
+    },
   });
 
   const deleteMutation = useMutation({
@@ -322,6 +327,7 @@ export function HabitGrid({ week, onEditHabit }: HabitGridProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["currentWeek"] });
       queryClient.invalidateQueries({ queryKey: ["habits"] });
+      queryClient.invalidateQueries({ queryKey: ["weeks"] });
     },
   });
 
@@ -338,6 +344,7 @@ export function HabitGrid({ week, onEditHabit }: HabitGridProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["currentWeek"] });
       queryClient.invalidateQueries({ queryKey: ["habits"] });
+      queryClient.invalidateQueries({ queryKey: ["weeks"] });
     },
   });
 

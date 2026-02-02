@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Star,
   Sun,
@@ -179,11 +180,13 @@ export function getHabitIcon(iconName: string): LucideIcon {
 // Render habit icon component
 export function HabitIcon({
   name,
-  className = "w-5 h-5"
+  className = "w-5 h-5",
+  style,
 }: {
   name: string;
   className?: string;
+  style?: React.CSSProperties;
 }) {
   const Icon = getHabitIcon(name);
-  return <Icon className={className} />;
+  return <Icon className={className} style={style} />;
 }

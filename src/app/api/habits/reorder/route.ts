@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getWeekStartInTimezone } from "@/lib/week-utils";
 
 const reorderSchema = z.object({
   habitIds: z.array(z.string()),
@@ -32,15 +33,46 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Update sort orders in a transaction
-    await prisma.$transaction(
-      habitIds.map((id, index) =>
-        prisma.habit.update({
-          where: { id },
-          data: { sortOrder: index },
-        })
-      )
+    // Get user timezone for finding current week
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { timezone: true },
+    });
+    const timezone = user?.timezone || "America/New_York";
+    const weekStart = getWeekStartInTimezone(timezone);
+
+    // Find current week
+    const currentWeek = await prisma.week.findUnique({
+      where: {
+        userId_startDate: {
+          userId: session.user.id,
+          startDate: weekStart,
+        },
+      },
+    });
+
+    // Update sort orders for habits and snapshots in a transaction
+    const habitUpdates = habitIds.map((id, index) =>
+      prisma.habit.update({
+        where: { id },
+        data: { sortOrder: index },
+      })
     );
+
+    // Also update the current week's snapshots if the week exists
+    const snapshotUpdates = currentWeek
+      ? habitIds.map((habitId, index) =>
+          prisma.weekHabitSnapshot.updateMany({
+            where: {
+              weekId: currentWeek.id,
+              habitId: habitId,
+            },
+            data: { sortOrder: index },
+          })
+        )
+      : [];
+
+    await prisma.$transaction([...habitUpdates, ...snapshotUpdates]);
 
     return NextResponse.json({ message: "Habits reordered" });
   } catch (error) {

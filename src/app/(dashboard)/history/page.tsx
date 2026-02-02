@@ -1,16 +1,19 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Check, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Calendar, Zap, Plus, Trash2 } from "lucide-react";
+import { Loader2, Check, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Calendar, Zap, Plus, Trash2, Trophy } from "lucide-react";
 import { useState } from "react";
 import { formatWeekRange, DAY_NAMES } from "@/lib/week-utils";
 import { cn } from "@/lib/utils";
+import { HabitIcon } from "@/lib/habit-icons";
+import { getTrophyTier, getTrophyColor, getTrophyName, TrophyTier, TROPHY_THRESHOLDS } from "@/lib/trophies";
 
 interface WeekSnapshot {
   id: string;
   habitId: string;
   name: string;
   color: string;
+  icon: string;
   sortOrder: number;
 }
 
@@ -41,6 +44,39 @@ interface WeeksResponse {
   weeks: Week[];
   total: number;
   hasMore: boolean;
+}
+
+function TrophyBadge({ tier, size = "md" }: { tier: TrophyTier; size?: "sm" | "md" | "lg" }) {
+  const color = getTrophyColor(tier);
+  const sizeClasses = {
+    sm: "w-8 h-8",
+    md: "w-12 h-12",
+    lg: "w-16 h-16",
+  };
+
+  if (tier === "none") {
+    return (
+      <div
+        className={`${sizeClasses[size]} rounded-full flex items-center justify-center`}
+        style={{ backgroundColor: "rgba(74, 74, 88, 0.2)", border: "2px dashed #3A3A48" }}
+      >
+        <Trophy className={size === "lg" ? "w-8 h-8" : size === "md" ? "w-6 h-6" : "w-4 h-4"} style={{ color: "#3A3A48" }} />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={`${sizeClasses[size]} rounded-full flex items-center justify-center`}
+      style={{
+        backgroundColor: `${color}20`,
+        border: `2px solid ${color}`,
+        boxShadow: `0 0 15px ${color}40`,
+      }}
+    >
+      <Trophy className={size === "lg" ? "w-8 h-8" : size === "md" ? "w-6 h-6" : "w-4 h-4"} style={{ color }} />
+    </div>
+  );
 }
 
 function HistoryCheckbox({
@@ -105,11 +141,10 @@ function WeekCard({
     (a, b) => a.sortOrder - b.sortOrder
   );
 
-  // Calculate score tier for color
+  // Calculate trophy tier
   const percentage = week.score?.percentage || 0;
-  const tierColor = percentage >= 90 ? "#00F0FF" :
-                    percentage >= 75 ? "#FFD700" :
-                    percentage >= 50 ? "#8A9BA8" : "#CD7F32";
+  const trophyTier = getTrophyTier(percentage);
+  const trophyColor = getTrophyColor(trophyTier);
 
   // Determine which days can be edited
   // For current week: can edit today and past days (not future)
@@ -149,32 +184,43 @@ function WeekCard({
         onClick={onToggleExpand}
         className="w-full flex items-center justify-between pr-10"
       >
-        <div className="flex items-center gap-3">
-          <Calendar className="w-5 h-5" style={{ color: '#00F0FF' }} />
+        <div className="flex items-center gap-4">
+          {/* Trophy Badge */}
+          <TrophyBadge tier={trophyTier} size="md" />
+
           <div className="text-left">
-            <h3 className="font-semibold" style={{ color: '#F0F0F5' }}>
-              {formatWeekRange(new Date(week.startDate), new Date(week.endDate))}
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold" style={{ color: '#F0F0F5' }}>
+                {formatWeekRange(new Date(week.startDate), new Date(week.endDate))}
+              </h3>
               {isCurrentWeek && (
                 <span
-                  className="ml-2 text-xs font-normal px-2 py-0.5 rounded"
+                  className="text-xs font-normal px-2 py-0.5 rounded"
                   style={{ backgroundColor: 'rgba(0, 240, 255, 0.2)', color: '#00F0FF' }}
                 >
                   Current
                 </span>
               )}
-            </h3>
-            {week.score && (
-              <p className="text-sm" style={{ color: '#A0A0B0' }}>
-                {week.score.totalCompletions} / {week.score.possibleCompletions}{" "}
-                completed ({Math.round(week.score.percentage)}%)
-              </p>
-            )}
+            </div>
+            <div className="flex items-center gap-3 mt-1">
+              {trophyTier !== "none" && (
+                <span className="text-sm font-semibold" style={{ color: trophyColor }}>
+                  {getTrophyName(trophyTier)} Trophy
+                </span>
+              )}
+              {week.score && (
+                <span className="text-sm" style={{ color: '#A0A0B0' }}>
+                  {week.score.totalCompletions} / {week.score.possibleCompletions}{" "}
+                  ({Math.round(week.score.percentage)}%)
+                </span>
+              )}
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-4">
           {week.score && (
             <div className="text-right">
-              <div className="flex items-center gap-1 font-mono font-bold" style={{ color: tierColor }}>
+              <div className="flex items-center gap-1 font-mono font-bold" style={{ color: '#00F0FF' }}>
                 <Zap className="w-4 h-4" />
                 +{week.score.xpEarned} XP
               </div>
@@ -277,10 +323,18 @@ function WeekCard({
                   >
                     <td className="py-3 pr-6">
                       <div className="flex items-center gap-3">
-                        <div
-                          className="w-3 h-3 rounded-sm flex-shrink-0"
-                          style={{ backgroundColor: snapshot.color }}
-                        />
+                        {snapshot.icon ? (
+                          <HabitIcon
+                            name={snapshot.icon}
+                            className="w-5 h-5 flex-shrink-0"
+                            style={{ color: snapshot.color }}
+                          />
+                        ) : (
+                          <div
+                            className="w-5 h-5 rounded-sm flex-shrink-0"
+                            style={{ backgroundColor: snapshot.color }}
+                          />
+                        )}
                         <span
                           className="text-sm font-medium"
                           style={{ color: '#F0F0F5' }}
@@ -516,15 +570,60 @@ export default function HistoryPage() {
     });
   }
 
+  // Calculate trophy counts
+  const trophyCounts = data?.weeks?.reduce(
+    (acc, week) => {
+      const tier = getTrophyTier(week.score?.percentage || 0);
+      if (tier !== "none") {
+        acc[tier] = (acc[tier] || 0) + 1;
+      }
+      return acc;
+    },
+    { gold: 0, silver: 0, bronze: 0 } as Record<string, number>
+  ) || { gold: 0, silver: 0, bronze: 0 };
+
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold" style={{ color: '#F0F0F5' }}>History</h1>
-          <p className="mt-1" style={{ color: '#A0A0B0' }}>
-            {data?.total || 0} weeks tracked
-          </p>
+      {/* Trophy Summary Card */}
+      <div
+        className="mb-8 p-6 rounded-lg"
+        style={{
+          backgroundColor: '#12121A',
+          border: '1px solid #2A2A38'
+        }}
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold" style={{ color: '#F0F0F5' }}>History</h1>
+            <p className="mt-1" style={{ color: '#A0A0B0' }}>
+              {data?.total || 0} weeks tracked
+            </p>
+          </div>
+          <div className="flex items-center gap-6">
+            {/* Trophy counts */}
+            <div className="flex items-center gap-1">
+              <TrophyBadge tier="gold" size="sm" />
+              <span className="font-mono font-bold text-lg ml-1" style={{ color: getTrophyColor("gold") }}>
+                {trophyCounts.gold}
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <TrophyBadge tier="silver" size="sm" />
+              <span className="font-mono font-bold text-lg ml-1" style={{ color: getTrophyColor("silver") }}>
+                {trophyCounts.silver}
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <TrophyBadge tier="bronze" size="sm" />
+              <span className="font-mono font-bold text-lg ml-1" style={{ color: getTrophyColor("bronze") }}>
+                {trophyCounts.bronze}
+              </span>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div className="flex items-center justify-end mb-4">
         <div className="relative">
           <button
             onClick={() => setShowAddWeekMenu(!showAddWeekMenu)}

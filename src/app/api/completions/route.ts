@@ -3,6 +3,7 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getWeekStart, getWeekEnd, getDayIndex } from "@/lib/week-utils";
+import { TROPHY_THRESHOLDS, getTrophyTier } from "@/lib/trophies";
 
 const toggleCompletionSchema = z.object({
   habitId: z.string(),
@@ -148,16 +149,21 @@ export async function POST(req: NextRequest) {
     });
 
     if (weekScore) {
+      const newPercentage = weekScore.possibleCompletions > 0
+        ? (completionCount / weekScore.possibleCompletions) * 100
+        : 0;
+
       await prisma.weekScore.update({
         where: { weekId },
         data: {
           totalCompletions: completionCount,
-          percentage: weekScore.possibleCompletions > 0
-            ? (completionCount / weekScore.possibleCompletions) * 100
-            : 0,
+          percentage: newPercentage,
           xpEarned: { increment: xpChange },
         },
       });
+
+      // Check for trophy achievements
+      await checkTrophyAchievements(session.user.id, newPercentage);
     }
 
     // Update habit streak
@@ -283,5 +289,47 @@ async function checkAndGrantAchievement(userId: string, code: string) {
     await prisma.achievement.create({
       data: { userId, code },
     });
+  }
+}
+
+async function checkTrophyAchievements(userId: string, currentPercentage: number) {
+  // Get all week scores for trophy counting
+  const allWeekScores = await prisma.weekScore.findMany({
+    where: {
+      week: { userId },
+    },
+    select: { percentage: true },
+  });
+
+  const goldCount = allWeekScores.filter(s => s.percentage >= TROPHY_THRESHOLDS.gold).length;
+  const silverCount = allWeekScores.filter(s => s.percentage >= TROPHY_THRESHOLDS.silver).length;
+  const bronzeCount = allWeekScores.filter(s => s.percentage >= TROPHY_THRESHOLDS.bronze).length;
+
+  // First trophy achievements
+  if (currentPercentage >= TROPHY_THRESHOLDS.bronze) {
+    await checkAndGrantAchievement(userId, "first_bronze");
+  }
+  if (currentPercentage >= TROPHY_THRESHOLDS.silver) {
+    await checkAndGrantAchievement(userId, "first_silver");
+  }
+  if (currentPercentage >= TROPHY_THRESHOLDS.gold) {
+    await checkAndGrantAchievement(userId, "first_gold");
+  }
+
+  // Gold count achievements
+  if (goldCount >= 5) {
+    await checkAndGrantAchievement(userId, "gold_5");
+  }
+  if (goldCount >= 10) {
+    await checkAndGrantAchievement(userId, "gold_10");
+  }
+
+  // Total trophy count achievements
+  const totalTrophies = bronzeCount; // bronzeCount includes silver and gold since they're >= 60%
+  if (totalTrophies >= 10) {
+    await checkAndGrantAchievement(userId, "total_trophies_10");
+  }
+  if (totalTrophies >= 25) {
+    await checkAndGrantAchievement(userId, "total_trophies_25");
   }
 }

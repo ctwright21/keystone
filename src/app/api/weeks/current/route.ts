@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getWeekStartInTimezone, getWeekEndInTimezone, getDayIndexInTimezone } from "@/lib/week-utils";
+import { TROPHY_THRESHOLDS, getTrophyTier } from "@/lib/trophies";
 
 export async function GET() {
   try {
@@ -96,12 +97,22 @@ export async function GET() {
       });
 
       if (stats) {
-        if (stats.weeksCompleted === 4) {
+        if (stats.weeksCompleted >= 4) {
           await checkAndGrantAchievement(session.user.id, "weeks_4");
-        } else if (stats.weeksCompleted === 12) {
+        }
+        if (stats.weeksCompleted >= 12) {
           await checkAndGrantAchievement(session.user.id, "weeks_12");
         }
+        if (stats.weeksCompleted >= 26) {
+          await checkAndGrantAchievement(session.user.id, "weeks_26");
+        }
+        if (stats.weeksCompleted >= 52) {
+          await checkAndGrantAchievement(session.user.id, "weeks_52");
+        }
       }
+
+      // Check for consecutive trophy achievements
+      await checkConsecutiveTrophyAchievements(session.user.id);
     }
 
     // Build completion map for easy lookup
@@ -137,5 +148,49 @@ async function checkAndGrantAchievement(userId: string, code: string) {
     await prisma.achievement.create({
       data: { userId, code },
     });
+  }
+}
+
+async function checkConsecutiveTrophyAchievements(userId: string) {
+  // Get the last 5 weeks with scores, ordered by date
+  const recentWeeks = await prisma.week.findMany({
+    where: { userId },
+    include: { score: true },
+    orderBy: { startDate: "desc" },
+    take: 5,
+  });
+
+  if (recentWeeks.length < 2) return;
+
+  // Check for "consistency_king" - 4 consecutive trophy weeks
+  if (recentWeeks.length >= 4) {
+    const last4HaveTrophies = recentWeeks.slice(0, 4).every(
+      (w) => w.score && w.score.percentage >= TROPHY_THRESHOLDS.bronze
+    );
+    if (last4HaveTrophies) {
+      await checkAndGrantAchievement(userId, "consistency_king");
+    }
+  }
+
+  // Check for "comeback_kid" - went from no trophy to trophy
+  const currentWeek = recentWeeks[0];
+  const previousWeek = recentWeeks[1];
+
+  if (currentWeek?.score && previousWeek?.score) {
+    const currentHasTrophy = currentWeek.score.percentage >= TROPHY_THRESHOLDS.bronze;
+    const previousHadNoTrophy = previousWeek.score.percentage < TROPHY_THRESHOLDS.bronze;
+
+    if (currentHasTrophy && previousHadNoTrophy) {
+      await checkAndGrantAchievement(userId, "comeback_kid");
+    }
+
+    // Check for "upgrade_week" - improved trophy tier
+    const currentTier = getTrophyTier(currentWeek.score.percentage);
+    const previousTier = getTrophyTier(previousWeek.score.percentage);
+
+    const tierOrder = { none: 0, bronze: 1, silver: 2, gold: 3 };
+    if (tierOrder[currentTier] > tierOrder[previousTier]) {
+      await checkAndGrantAchievement(userId, "upgrade_week");
+    }
   }
 }

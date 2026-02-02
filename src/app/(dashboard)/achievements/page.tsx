@@ -22,6 +22,7 @@ interface AchievementsResponse {
     streaks: Achievement[];
     completions: Achievement[];
     milestones: Achievement[];
+    trophies: Achievement[];
     special: Achievement[];
   };
   totalUnlocked: number;
@@ -33,8 +34,9 @@ const CATEGORY_CONFIG: Record<string, { label: string; icon: React.ComponentType
   habits: { label: "Habits", icon: Target, color: "#00F0FF" },
   streaks: { label: "Streaks", icon: Flame, color: "#FF6B2C" },
   completions: { label: "Completions", icon: Zap, color: "#10B981" },
+  trophies: { label: "Trophies", icon: Trophy, color: "#FFD700" },
   milestones: { label: "Milestones", icon: Star, color: "#8B5CF6" },
-  special: { label: "Special", icon: Trophy, color: "#FFD700" },
+  special: { label: "Special", icon: Trophy, color: "#EC4899" },
 };
 
 function AchievementCard({ achievement }: { achievement: Achievement }) {

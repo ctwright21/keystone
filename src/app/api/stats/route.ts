@@ -7,6 +7,7 @@ import {
   getRankFromLevel,
   getXpForLevel,
 } from "@/lib/achievements";
+import { TROPHY_THRESHOLDS } from "@/lib/trophies";
 
 export async function GET() {
   try {
@@ -48,12 +49,32 @@ export async function GET() {
       if (level >= 50) await checkAndGrantAchievement(session.user.id, "level_50");
     }
 
+    // Calculate trophy counts from all weeks
+    const weekScores = await prisma.weekScore.findMany({
+      where: {
+        week: {
+          userId: session.user.id,
+        },
+      },
+      select: {
+        percentage: true,
+      },
+    });
+
+    const trophyCounts = {
+      gold: weekScores.filter(s => s.percentage >= TROPHY_THRESHOLDS.gold).length,
+      silver: weekScores.filter(s => s.percentage >= TROPHY_THRESHOLDS.silver && s.percentage < TROPHY_THRESHOLDS.gold).length,
+      bronze: weekScores.filter(s => s.percentage >= TROPHY_THRESHOLDS.bronze && s.percentage < TROPHY_THRESHOLDS.silver).length,
+      total: weekScores.filter(s => s.percentage >= TROPHY_THRESHOLDS.bronze).length,
+    };
+
     return NextResponse.json({
       ...stats,
       level,
       rank,
       progress,
       xpForNextLevel,
+      trophyCounts,
     });
   } catch (error) {
     console.error("Get stats error:", error);

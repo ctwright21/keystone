@@ -4,7 +4,7 @@ export interface AchievementDefinition {
   description: string;
   icon: string;
   xpReward: number;
-  category: "habits" | "streaks" | "completions" | "milestones" | "special";
+  category: "habits" | "streaks" | "completions" | "milestones" | "trophies" | "special";
 }
 
 export const ACHIEVEMENTS: AchievementDefinition[] = [
@@ -118,23 +118,65 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     category: "completions",
   },
 
-  // Weekly milestones
+  // Trophy achievements
   {
-    code: "perfect_week",
-    name: "Perfect Week",
-    description: "Complete all habits every day for a week",
-    icon: "sparkles",
-    xpReward: 250,
-    category: "milestones",
+    code: "first_bronze",
+    name: "Bronze Beginner",
+    description: "Earn your first bronze trophy (60%+ weekly completion)",
+    icon: "trophy",
+    xpReward: 50,
+    category: "trophies",
   },
   {
-    code: "perfect_month",
-    name: "Perfect Month",
-    description: "Have 4 perfect weeks in a row",
-    icon: "calendar-check",
+    code: "first_silver",
+    name: "Silver Seeker",
+    description: "Earn your first silver trophy (75%+ weekly completion)",
+    icon: "trophy",
+    xpReward: 100,
+    category: "trophies",
+  },
+  {
+    code: "first_gold",
+    name: "Gold Standard",
+    description: "Earn your first gold trophy (85%+ weekly completion)",
+    icon: "trophy",
+    xpReward: 200,
+    category: "trophies",
+  },
+  {
+    code: "gold_5",
+    name: "Golden Streak",
+    description: "Earn 5 gold trophies",
+    icon: "medal",
+    xpReward: 500,
+    category: "trophies",
+  },
+  {
+    code: "gold_10",
+    name: "Gold Rush",
+    description: "Earn 10 gold trophies",
+    icon: "crown",
     xpReward: 1000,
-    category: "milestones",
+    category: "trophies",
   },
+  {
+    code: "total_trophies_10",
+    name: "Trophy Collector",
+    description: "Earn 10 total trophies (any tier)",
+    icon: "package",
+    xpReward: 150,
+    category: "trophies",
+  },
+  {
+    code: "total_trophies_25",
+    name: "Trophy Hunter",
+    description: "Earn 25 total trophies (any tier)",
+    icon: "warehouse",
+    xpReward: 400,
+    category: "trophies",
+  },
+
+  // Weekly milestones
   {
     code: "weeks_4",
     name: "Monthly Tracker",
@@ -149,6 +191,22 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     description: "Track habits for 12 weeks",
     icon: "calendar-days",
     xpReward: 300,
+    category: "milestones",
+  },
+  {
+    code: "weeks_26",
+    name: "Half Year Hero",
+    description: "Track habits for 26 weeks",
+    icon: "calendar-range",
+    xpReward: 600,
+    category: "milestones",
+  },
+  {
+    code: "weeks_52",
+    name: "Year of Growth",
+    description: "Track habits for 52 weeks",
+    icon: "calendar-heart",
+    xpReward: 1500,
     category: "milestones",
   },
 
@@ -188,26 +246,26 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
 
   // Special achievements
   {
-    code: "early_bird",
-    name: "Early Bird",
-    description: "Complete a habit before 6 AM",
-    icon: "sunrise",
+    code: "comeback_kid",
+    name: "Comeback Kid",
+    description: "Improve from no trophy to any trophy week over week",
+    icon: "trending-up",
     xpReward: 75,
     category: "special",
   },
   {
-    code: "night_owl",
-    name: "Night Owl",
-    description: "Complete a habit after 11 PM",
-    icon: "moon",
-    xpReward: 75,
+    code: "consistency_king",
+    name: "Consistency King",
+    description: "Earn a trophy for 4 consecutive weeks",
+    icon: "crown",
+    xpReward: 300,
     category: "special",
   },
   {
-    code: "weekend_warrior",
-    name: "Weekend Warrior",
-    description: "Complete all habits on both Saturday and Sunday",
-    icon: "dumbbell",
+    code: "upgrade_week",
+    name: "Level Up",
+    description: "Upgrade your trophy tier from the previous week",
+    icon: "arrow-up",
     xpReward: 100,
     category: "special",
   },

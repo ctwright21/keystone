@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Zap, TrendingUp, Flame, Trophy } from "lucide-react";
 import { RANK_INFO } from "@/lib/achievements";
+import { getTrophyColor } from "@/lib/trophies";
 import { cn } from "@/lib/utils";
 
 interface Stats {
@@ -14,6 +15,12 @@ interface Stats {
   currentStreak: number;
   longestStreak: number;
   totalCompletions: number;
+  trophyCounts?: {
+    gold: number;
+    silver: number;
+    bronze: number;
+    total: number;
+  };
 }
 
 export function StatsCard() {
@@ -92,6 +99,67 @@ export function StatsCard() {
         </div>
       </div>
 
+      {/* Trophy counts */}
+      {stats.trophyCounts && stats.trophyCounts.total > 0 && (
+        <div
+          className="mb-6 p-4 rounded-md"
+          style={{ backgroundColor: 'rgba(34, 34, 46, 0.5)', border: '1px solid #2A2A38' }}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-semibold uppercase tracking-wide" style={{ color: '#A0A0B0' }}>
+              Trophies Earned
+            </span>
+            <span className="font-mono font-bold" style={{ color: '#F0F0F5' }}>
+              {stats.trophyCounts.total}
+            </span>
+          </div>
+          <div className="flex items-center justify-center gap-6">
+            <div className="flex items-center gap-2">
+              <div
+                className="w-6 h-6 rounded-full flex items-center justify-center"
+                style={{
+                  backgroundColor: `${getTrophyColor("gold")}20`,
+                  border: `2px solid ${getTrophyColor("gold")}`,
+                }}
+              >
+                <Trophy className="w-3 h-3" style={{ color: getTrophyColor("gold") }} />
+              </div>
+              <span className="font-mono font-bold" style={{ color: getTrophyColor("gold") }}>
+                {stats.trophyCounts.gold}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div
+                className="w-6 h-6 rounded-full flex items-center justify-center"
+                style={{
+                  backgroundColor: `${getTrophyColor("silver")}20`,
+                  border: `2px solid ${getTrophyColor("silver")}`,
+                }}
+              >
+                <Trophy className="w-3 h-3" style={{ color: getTrophyColor("silver") }} />
+              </div>
+              <span className="font-mono font-bold" style={{ color: getTrophyColor("silver") }}>
+                {stats.trophyCounts.silver}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div
+                className="w-6 h-6 rounded-full flex items-center justify-center"
+                style={{
+                  backgroundColor: `${getTrophyColor("bronze")}20`,
+                  border: `2px solid ${getTrophyColor("bronze")}`,
+                }}
+              >
+                <Trophy className="w-3 h-3" style={{ color: getTrophyColor("bronze") }} />
+              </div>
+              <span className="font-mono font-bold" style={{ color: getTrophyColor("bronze") }}>
+                {stats.trophyCounts.bronze}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Stats grid */}
       <div className="grid grid-cols-3 gap-3">
         <div
@@ -100,15 +168,7 @@ export function StatsCard() {
         >
           <Flame className="w-5 h-5 mx-auto mb-2 animate-fire-pulse" style={{ color: '#FF6B2C' }} />
           <div className="font-mono font-bold text-xl tabular-nums" style={{ color: '#F0F0F5' }}>{stats.currentStreak}</div>
-          <div className="text-xs uppercase tracking-wide mt-1" style={{ color: '#6A6A7A' }}>Current</div>
-        </div>
-        <div
-          className="text-center p-4 rounded-md"
-          style={{ backgroundColor: 'rgba(34, 34, 46, 0.5)', border: '1px solid #2A2A38' }}
-        >
-          <Trophy className="w-5 h-5 mx-auto mb-2" style={{ color: '#FFD700' }} />
-          <div className="font-mono font-bold text-xl tabular-nums" style={{ color: '#F0F0F5' }}>{stats.longestStreak}</div>
-          <div className="text-xs uppercase tracking-wide mt-1" style={{ color: '#6A6A7A' }}>Best</div>
+          <div className="text-xs uppercase tracking-wide mt-1" style={{ color: '#6A6A7A' }}>Streak</div>
         </div>
         <div
           className="text-center p-4 rounded-md"
@@ -117,6 +177,14 @@ export function StatsCard() {
           <TrendingUp className="w-5 h-5 mx-auto mb-2" style={{ color: '#10B981' }} />
           <div className="font-mono font-bold text-xl tabular-nums" style={{ color: '#F0F0F5' }}>{stats.totalCompletions}</div>
           <div className="text-xs uppercase tracking-wide mt-1" style={{ color: '#6A6A7A' }}>Done</div>
+        </div>
+        <div
+          className="text-center p-4 rounded-md"
+          style={{ backgroundColor: 'rgba(34, 34, 46, 0.5)', border: '1px solid #2A2A38' }}
+        >
+          <Trophy className="w-5 h-5 mx-auto mb-2" style={{ color: '#FFD700' }} />
+          <div className="font-mono font-bold text-xl tabular-nums" style={{ color: '#F0F0F5' }}>{stats.longestStreak}</div>
+          <div className="text-xs uppercase tracking-wide mt-1" style={{ color: '#6A6A7A' }}>Best</div>
         </div>
       </div>
     </div>
