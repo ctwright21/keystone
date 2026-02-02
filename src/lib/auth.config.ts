@@ -43,9 +43,23 @@ export const authConfig: NextAuthConfig = {
         pathname.startsWith(route)
       );
 
+      // Admin routes - require SUPER_ADMIN role
+      const adminRoutes = ["/admin"];
+      const isAdminRoute = adminRoutes.some((route) =>
+        pathname.startsWith(route)
+      );
+
       // If accessing protected route without auth, redirect to login
       if (isProtectedRoute && !isLoggedIn) {
         return false;
+      }
+
+      // If accessing admin route, check for SUPER_ADMIN role
+      if (isAdminRoute) {
+        if (!isLoggedIn) {
+          return false;
+        }
+        // Role check happens in the admin page itself since we can't access token here easily
       }
 
       return true;
@@ -53,12 +67,14 @@ export const authConfig: NextAuthConfig = {
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.role = user.role;
       }
       return token;
     },
     session({ session, token }) {
       if (session.user && token.id) {
         session.user.id = token.id as string;
+        session.user.role = (token.role as "USER" | "SUPER_ADMIN") || "USER";
       }
       return session;
     },

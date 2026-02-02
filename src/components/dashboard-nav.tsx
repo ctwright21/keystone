@@ -12,26 +12,32 @@ import {
   Menu,
   X,
   Zap,
+  Shield,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-const navItems = [
+const baseNavItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/achievements", label: "Achievements", icon: Trophy },
   { href: "/history", label: "History", icon: History },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
+const adminNavItem = { href: "/admin", label: "Admin", icon: Shield };
+
 export function DashboardNav() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const isAdmin = session?.user?.role === "SUPER_ADMIN";
+  const navItems = isAdmin ? [...baseNavItems, adminNavItem] : baseNavItems;
+
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex flex-col w-64 bg-bg-deep border-r border-border-subtle min-h-screen">
+      <aside className="hidden md:flex flex-col w-64 bg-bg-deep border-r border-border-subtle fixed top-0 left-0 h-screen">
         <div className="p-6">
           <Link href="/dashboard" className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-power rounded-md flex items-center justify-center glow-primary">

@@ -1,4 +1,54 @@
 /**
+ * Week start day constants
+ * 0 = Sunday, 1 = Monday
+ */
+export const WEEK_START_SUNDAY = 0;
+export const WEEK_START_MONDAY = 1;
+
+/**
+ * Day names arrays
+ */
+const DAY_NAMES_SUNDAY_START = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DAY_NAMES_MONDAY_START = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+const FULL_DAY_NAMES_SUNDAY_START = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+const FULL_DAY_NAMES_MONDAY_START = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
+
+/**
+ * Get day names based on week start day
+ */
+export function getDayNames(weekStartDay: number = WEEK_START_SUNDAY): string[] {
+  return weekStartDay === WEEK_START_MONDAY ? DAY_NAMES_MONDAY_START : DAY_NAMES_SUNDAY_START;
+}
+
+/**
+ * Get full day names based on week start day
+ */
+export function getFullDayNames(weekStartDay: number = WEEK_START_SUNDAY): string[] {
+  return weekStartDay === WEEK_START_MONDAY ? FULL_DAY_NAMES_MONDAY_START : FULL_DAY_NAMES_SUNDAY_START;
+}
+
+// Legacy exports for backwards compatibility
+export const DAY_NAMES = DAY_NAMES_SUNDAY_START;
+export const FULL_DAY_NAMES = FULL_DAY_NAMES_SUNDAY_START;
+
+/**
  * Get the current date in a specific timezone
  */
 export function getDateInTimezone(timezone: string = "America/New_York"): Date {
@@ -30,30 +80,45 @@ export function getDateInTimezone(timezone: string = "America/New_York"): Date {
 }
 
 /**
- * Get the start of the week (Sunday) for a given date
+ * Get the start of the week for a given date
+ * @param date - The date to get the week start for
+ * @param weekStartDay - 0 = Sunday, 1 = Monday
  */
-export function getWeekStart(date: Date = new Date()): Date {
+export function getWeekStart(date: Date = new Date(), weekStartDay: number = WEEK_START_SUNDAY): Date {
   const d = new Date(date);
-  const day = d.getDay(); // 0 = Sunday, 6 = Saturday
-  // Go back to Sunday
-  d.setDate(d.getDate() - day);
+  const currentDay = d.getDay(); // 0 = Sunday, 6 = Saturday
+
+  // Calculate days to subtract to get to the start of the week
+  let daysToSubtract: number;
+  if (weekStartDay === WEEK_START_MONDAY) {
+    // For Monday start: Monday=0 days back, Sunday=6 days back
+    daysToSubtract = currentDay === 0 ? 6 : currentDay - 1;
+  } else {
+    // For Sunday start: Sunday=0 days back, Saturday=6 days back
+    daysToSubtract = currentDay;
+  }
+
+  d.setDate(d.getDate() - daysToSubtract);
   d.setHours(0, 0, 0, 0);
   return d;
 }
 
 /**
- * Get the start of the week (Sunday) in a specific timezone
+ * Get the start of the week in a specific timezone
  */
-export function getWeekStartInTimezone(timezone: string = "America/New_York"): Date {
+export function getWeekStartInTimezone(
+  timezone: string = "America/New_York",
+  weekStartDay: number = WEEK_START_SUNDAY
+): Date {
   const now = getDateInTimezone(timezone);
-  return getWeekStart(now);
+  return getWeekStart(now, weekStartDay);
 }
 
 /**
- * Get the end of the week (Saturday) for a given date
+ * Get the end of the week for a given date
  */
-export function getWeekEnd(date: Date = new Date()): Date {
-  const start = getWeekStart(date);
+export function getWeekEnd(date: Date = new Date(), weekStartDay: number = WEEK_START_SUNDAY): Date {
+  const start = getWeekStart(date, weekStartDay);
   const end = new Date(start);
   end.setDate(end.getDate() + 6);
   end.setHours(23, 59, 59, 999);
@@ -61,10 +126,13 @@ export function getWeekEnd(date: Date = new Date()): Date {
 }
 
 /**
- * Get the end of the week (Saturday) in a specific timezone
+ * Get the end of the week in a specific timezone
  */
-export function getWeekEndInTimezone(timezone: string = "America/New_York"): Date {
-  const start = getWeekStartInTimezone(timezone);
+export function getWeekEndInTimezone(
+  timezone: string = "America/New_York",
+  weekStartDay: number = WEEK_START_SUNDAY
+): Date {
+  const start = getWeekStartInTimezone(timezone, weekStartDay);
   const end = new Date(start);
   end.setDate(end.getDate() + 6);
   end.setHours(23, 59, 59, 999);
@@ -72,18 +140,32 @@ export function getWeekEndInTimezone(timezone: string = "America/New_York"): Dat
 }
 
 /**
- * Get the day index (0 = Sunday, 6 = Saturday) for a date
+ * Get the day index (0-6) within the week for a date
+ * Returns 0 for the first day of the week, 6 for the last
+ * @param date - The date to get the index for
+ * @param weekStartDay - 0 = Sunday start, 1 = Monday start
  */
-export function getDayIndex(date: Date = new Date()): number {
-  return date.getDay(); // JavaScript's native: 0 = Sunday, 6 = Saturday
+export function getDayIndex(date: Date = new Date(), weekStartDay: number = WEEK_START_SUNDAY): number {
+  const jsDay = date.getDay(); // JavaScript: 0 = Sunday, 6 = Saturday
+
+  if (weekStartDay === WEEK_START_MONDAY) {
+    // Convert to Monday-based: Monday=0, Sunday=6
+    return jsDay === 0 ? 6 : jsDay - 1;
+  }
+
+  // Sunday-based: Sunday=0, Saturday=6 (same as JavaScript)
+  return jsDay;
 }
 
 /**
  * Get the day index in a specific timezone
  */
-export function getDayIndexInTimezone(timezone: string = "America/New_York"): number {
+export function getDayIndexInTimezone(
+  timezone: string = "America/New_York",
+  weekStartDay: number = WEEK_START_SUNDAY
+): number {
   const now = getDateInTimezone(timezone);
-  return now.getDay();
+  return getDayIndex(now, weekStartDay);
 }
 
 /**
@@ -117,20 +199,6 @@ export function formatWeekRange(startDate: Date, endDate: Date): string {
   });
   return `${start} - ${end}`;
 }
-
-/**
- * Get short day names for display (Sunday first)
- */
-export const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-export const FULL_DAY_NAMES = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
 
 /**
  * Check if a date is today
@@ -168,8 +236,8 @@ export function isPast(date: Date): boolean {
 /**
  * Check if a date is in the current week
  */
-export function isCurrentWeek(weekStart: Date): boolean {
-  const currentWeekStart = getWeekStart();
+export function isCurrentWeek(weekStart: Date, weekStartDay: number = WEEK_START_SUNDAY): boolean {
+  const currentWeekStart = getWeekStart(new Date(), weekStartDay);
   return weekStart.getTime() === currentWeekStart.getTime();
 }
 

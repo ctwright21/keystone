@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 const updateSettingsSchema = z.object({
   name: z.string().min(1).max(100).optional(),
   timezone: z.string().optional(),
+  weekStartDay: z.number().int().min(0).max(1).optional(), // 0 = Sunday, 1 = Monday
 });
 
 export async function GET() {
@@ -22,6 +23,7 @@ export async function GET() {
         name: true,
         email: true,
         timezone: true,
+        weekStartDay: true,
         image: true,
         createdAt: true,
       },
@@ -59,6 +61,7 @@ export async function PATCH(req: NextRequest) {
         name: true,
         email: true,
         timezone: true,
+        weekStartDay: true,
         image: true,
       },
     });

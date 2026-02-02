@@ -281,3 +281,13 @@ See this log for the ancestor stack trace. tbody <div>
 [03:04:50.511] Server  LOG     ✓ Compiled in 67ms
 [03:04:55.699] Server  LOG     ✓ Compiled in 78ms
 [03:05:02.161] Server  LOG     ✓ Compiled in 68ms
+[03:27:48.467] Server  LOG     ✓ Compiled in 271ms
+[03:27:56.745] Server  LOG     ✓ Compiled in 8ms
+[03:31:46.194] Server  LOG     ✓ Compiled in 8ms
+[03:31:54.375] Server  LOG     ✓ Compiled in 180ms
+[03:32:00.470] Server  LOG     ✓ Compiled in 343ms
+[03:32:03.361] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[03:37:52.297] Server  LOG     ✓ Compiled in 519ms
+[03:38:00.463] Server  LOG     ✓ Compiled in 264ms
+[03:38:21.107] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[03:40:50.542] Server  LOG     ✓ Compiled in 1232ms
