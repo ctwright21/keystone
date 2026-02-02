@@ -11,18 +11,19 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get user's timezone
+    // Get user's timezone and week start preference
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { timezone: true },
+      select: { timezone: true, weekStartDay: true },
     });
 
     const timezone = user?.timezone || "America/New_York";
+    const weekStartDay = user?.weekStartDay ?? 0; // 0 = Sunday, 1 = Monday
 
     // Calculate week boundaries in user's timezone
-    const weekStart = getWeekStartInTimezone(timezone);
-    const weekEnd = getWeekEndInTimezone(timezone);
-    const currentDayIndex = getDayIndexInTimezone(timezone);
+    const weekStart = getWeekStartInTimezone(timezone, weekStartDay);
+    const weekEnd = getWeekEndInTimezone(timezone, weekStartDay);
+    const currentDayIndex = getDayIndexInTimezone(timezone, weekStartDay);
 
     // Try to find existing week
     let week = await prisma.week.findUnique({
@@ -128,6 +129,7 @@ export async function GET() {
       ...week,
       completionMap,
       timezone,
+      weekStartDay,
       currentDayIndex,
     });
   } catch (error) {

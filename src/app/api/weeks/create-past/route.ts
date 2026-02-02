@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getWeekStart } from "@/lib/week-utils";
 
 const createPastWeekSchema = z.object({
   weeksAgo: z.number().int().min(1).max(52), // Can go back up to 1 year
@@ -17,13 +18,17 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { weeksAgo } = createPastWeekSchema.parse(body);
 
+    // Get user's week start preference
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { weekStartDay: true },
+    });
+
+    const weekStartDay = user?.weekStartDay ?? 0; // 0 = Sunday, 1 = Monday
+
     // Calculate the start and end date for the past week
-    // Week starts on Sunday (day 0)
     const now = new Date();
-    const currentWeekStart = new Date(now);
-    currentWeekStart.setHours(0, 0, 0, 0);
-    const dayOfWeek = currentWeekStart.getDay(); // 0 = Sunday, 6 = Saturday
-    currentWeekStart.setDate(currentWeekStart.getDate() - dayOfWeek); // Go back to Sunday
+    const currentWeekStart = getWeekStart(now, weekStartDay);
 
     // Go back the specified number of weeks
     const pastWeekStart = new Date(currentWeekStart);

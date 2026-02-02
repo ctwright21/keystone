@@ -9,6 +9,14 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Get user's week start preference
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { weekStartDay: true },
+    });
+
+    const weekStartDay = user?.weekStartDay ?? 0; // 0 = Sunday, 1 = Monday
+
     const { searchParams } = new URL(req.url);
     const limit = parseInt(searchParams.get("limit") || "10");
     const offset = parseInt(searchParams.get("offset") || "0");
@@ -35,6 +43,7 @@ export async function GET(req: NextRequest) {
       weeks,
       total,
       hasMore: offset + weeks.length < total,
+      weekStartDay,
     });
   } catch (error) {
     console.error("Get weeks error:", error);

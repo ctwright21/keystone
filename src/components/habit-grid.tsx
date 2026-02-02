@@ -21,7 +21,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { Check, GripVertical, Pencil, Trash2, Pause, X, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { DAY_NAMES } from "@/lib/week-utils";
+import { getDayNames } from "@/lib/week-utils";
 import { HabitIcon } from "@/lib/habit-icons";
 
 interface HabitSnapshot {
@@ -42,6 +42,7 @@ interface Week {
   completionMap: Record<string, Record<number, boolean>>;
   currentDayIndex?: number;
   timezone?: string;
+  weekStartDay?: number; // 0 = Sunday, 1 = Monday
 }
 
 interface HabitGridProps {
@@ -52,7 +53,8 @@ interface HabitGridProps {
 // Get dates for each day of the week
 function getWeekDates(startDate: string): number[] {
   const start = new Date(startDate);
-  return DAY_NAMES.map((_, i) => {
+  // Always 7 days in a week
+  return Array.from({ length: 7 }, (_, i) => {
     const date = new Date(start);
     date.setDate(start.getDate() + i);
     return date.getDate();
@@ -101,6 +103,7 @@ function SortableHabitRow({
   onEdit,
   onDelete,
   onPause,
+  dayNames,
 }: {
   snapshot: HabitSnapshot;
   weekId: string;
@@ -110,6 +113,7 @@ function SortableHabitRow({
   onEdit: (habitId: string) => void;
   onDelete: (habitId: string) => void;
   onPause: (habitId: string) => void;
+  dayNames: string[];
 }) {
   const [showActions, setShowActions] = useState(false);
 
@@ -189,7 +193,7 @@ function SortableHabitRow({
       </td>
 
       {/* Day checkboxes */}
-      {DAY_NAMES.map((_, index) => {
+      {dayNames.map((_, index) => {
         const isCompleted = completions[index] || false;
         const isToday = index === currentDayIndex;
         const isPast = index < currentDayIndex;
@@ -217,10 +221,12 @@ function PerfectDayRow({
   completionsByDay,
   habitCount,
   currentDayIndex,
+  dayNames,
 }: {
   completionsByDay: number[];
   habitCount: number;
   currentDayIndex: number;
+  dayNames: string[];
 }) {
   return (
     <tr className="border-t-2 border-[#3A3A48] bg-[#1A1A24]/30">
@@ -231,7 +237,7 @@ function PerfectDayRow({
           <span className="text-[#A0A0B0] text-sm font-semibold uppercase tracking-wide">Perfect Day</span>
         </div>
       </td>
-      {DAY_NAMES.map((_, index) => {
+      {dayNames.map((_, index) => {
         const completions = completionsByDay[index] || 0;
         const isPerfect = habitCount > 0 && completions === habitCount;
         const isToday = index === currentDayIndex;
@@ -263,6 +269,8 @@ export function HabitGrid({ week, onEditHabit }: HabitGridProps) {
   const queryClient = useQueryClient();
   const [habits, setHabits] = useState(week.snapshots);
   const currentDayIndex = week.currentDayIndex ?? 0;
+  const weekStartDay = week.weekStartDay ?? 0;
+  const dayNames = getDayNames(weekStartDay);
   const weekDates = getWeekDates(week.startDate);
 
   // Sync local state when week data changes
@@ -363,7 +371,7 @@ export function HabitGrid({ week, onEditHabit }: HabitGridProps) {
   }
 
   // Calculate completions per day for Perfect Day row
-  const completionsByDay = DAY_NAMES.map((_, dayIndex) => {
+  const completionsByDay = dayNames.map((_, dayIndex) => {
     return habits.filter(
       (h) => week.completionMap[h.habitId]?.[dayIndex]
     ).length;
@@ -397,7 +405,7 @@ export function HabitGrid({ week, onEditHabit }: HabitGridProps) {
           <thead>
             <tr className="text-[#6A6A7A] text-xs uppercase tracking-wider">
               <th className="text-left py-3 pr-4 font-semibold">Habit</th>
-              {DAY_NAMES.map((day, index) => {
+              {dayNames.map((day, index) => {
                 const isToday = index === currentDayIndex;
                 return (
                   <th
@@ -434,6 +442,7 @@ export function HabitGrid({ week, onEditHabit }: HabitGridProps) {
                   onEdit={onEditHabit}
                   onDelete={(habitId) => deleteMutation.mutate(habitId)}
                   onPause={(habitId) => pauseMutation.mutate(habitId)}
+                  dayNames={dayNames}
                 />
               ))}
             </SortableContext>
@@ -441,6 +450,7 @@ export function HabitGrid({ week, onEditHabit }: HabitGridProps) {
               completionsByDay={completionsByDay}
               habitCount={habits.length}
               currentDayIndex={currentDayIndex}
+              dayNames={dayNames}
             />
           </tbody>
         </table>

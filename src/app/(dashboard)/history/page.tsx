@@ -3,7 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Check, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Calendar, Zap, Plus, Trash2, Trophy } from "lucide-react";
 import { useState } from "react";
-import { formatWeekRange, DAY_NAMES } from "@/lib/week-utils";
+import { formatWeekRange, getDayNames, getWeekStart } from "@/lib/week-utils";
 import { cn } from "@/lib/utils";
 import { HabitIcon } from "@/lib/habit-icons";
 import { getTrophyTier, getTrophyColor, getTrophyName, TrophyTier, TROPHY_THRESHOLDS } from "@/lib/trophies";
@@ -44,6 +44,7 @@ interface WeeksResponse {
   weeks: Week[];
   total: number;
   hasMore: boolean;
+  weekStartDay: number; // 0 = Sunday, 1 = Monday
 }
 
 function TrophyBadge({ tier, size = "md" }: { tier: TrophyTier; size?: "sm" | "md" | "lg" }) {
@@ -120,6 +121,7 @@ function WeekCard({
   onDeleteWeek,
   loadingCompletion,
   isDeleting,
+  weekStartDay,
 }: {
   week: Week;
   isExpanded: boolean;
@@ -128,6 +130,7 @@ function WeekCard({
   onDeleteWeek: () => void;
   loadingCompletion: string | null;
   isDeleting: boolean;
+  weekStartDay: number;
 }) {
   const completionMap: Record<string, Set<number>> = {};
   week.completions.forEach((c) => {
@@ -145,6 +148,9 @@ function WeekCard({
   const percentage = week.score?.percentage || 0;
   const trophyTier = getTrophyTier(percentage);
   const trophyColor = getTrophyColor(trophyTier);
+
+  // Get day names based on week start preference
+  const dayNames = getDayNames(weekStartDay);
 
   // Determine which days can be edited
   // For current week: can edit today and past days (not future)
@@ -168,7 +174,7 @@ function WeekCard({
 
   // Get dates for each day of the week
   const getWeekDates = () => {
-    return DAY_NAMES.map((_, i) => {
+    return Array.from({ length: 7 }, (_, i) => {
       const date = new Date(weekStart);
       date.setDate(weekStart.getDate() + i);
       return date.getDate();
@@ -279,7 +285,7 @@ function WeekCard({
                       Habit
                     </span>
                   </th>
-                  {DAY_NAMES.map((day, index) => {
+                  {dayNames.map((day, index) => {
                     const isToday = isCurrentWeek && index === currentDayIndex;
                     const canEdit = canEditDay(index);
                     return (
@@ -343,7 +349,7 @@ function WeekCard({
                         </span>
                       </div>
                     </td>
-                    {DAY_NAMES.map((_, dayIndex) => {
+                    {dayNames.map((_, dayIndex) => {
                       const isCompleted = completionMap[snapshot.habitId]?.has(dayIndex);
                       const canEdit = canEditDay(dayIndex);
                       const isLoading = loadingCompletion === `${snapshot.habitId}-${dayIndex}`;
@@ -534,14 +540,13 @@ export default function HistoryPage() {
     );
   }
 
+  // Get weekStartDay from API response (default to Sunday)
+  const weekStartDay = data?.weekStartDay ?? 0;
+
   // Helper to get week range text for past weeks
-  // Week starts on Sunday (day 0)
   function getPastWeekLabel(weeksAgo: number) {
     const now = new Date();
-    const currentWeekStart = new Date(now);
-    currentWeekStart.setHours(0, 0, 0, 0);
-    const dayOfWeek = currentWeekStart.getDay(); // 0 = Sunday, 6 = Saturday
-    currentWeekStart.setDate(currentWeekStart.getDate() - dayOfWeek); // Go back to Sunday
+    const currentWeekStart = getWeekStart(now, weekStartDay);
 
     const pastWeekStart = new Date(currentWeekStart);
     pastWeekStart.setDate(pastWeekStart.getDate() - (weeksAgo * 7));
@@ -556,10 +561,7 @@ export default function HistoryPage() {
   function doesWeekExist(weeksAgo: number) {
     if (!data?.weeks) return false;
     const now = new Date();
-    const currentWeekStart = new Date(now);
-    currentWeekStart.setHours(0, 0, 0, 0);
-    const dayOfWeek = currentWeekStart.getDay(); // 0 = Sunday, 6 = Saturday
-    currentWeekStart.setDate(currentWeekStart.getDate() - dayOfWeek); // Go back to Sunday
+    const currentWeekStart = getWeekStart(now, weekStartDay);
 
     const pastWeekStart = new Date(currentWeekStart);
     pastWeekStart.setDate(pastWeekStart.getDate() - (weeksAgo * 7));
@@ -731,6 +733,7 @@ export default function HistoryPage() {
                 onDeleteWeek={() => handleDeleteWeek(week.id)}
                 loadingCompletion={loadingCompletion}
                 isDeleting={deletingWeekId === week.id}
+                weekStartDay={weekStartDay}
               />
             ))}
           </div>

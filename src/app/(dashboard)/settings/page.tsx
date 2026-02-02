@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, User, Mail, LogOut, Trash2, Globe, Check, Settings } from "lucide-react";
+import { Loader2, User, Mail, LogOut, Trash2, Globe, Check, Settings, Calendar } from "lucide-react";
 
 const TIMEZONES = [
   { value: "Pacific/Honolulu", label: "Hawaii (HST)" },
@@ -35,6 +35,7 @@ interface UserSettings {
   name: string;
   email: string;
   timezone: string;
+  weekStartDay: number; // 0 = Sunday, 1 = Monday
   image: string | null;
 }
 
@@ -43,6 +44,7 @@ export default function SettingsPage() {
   const queryClient = useQueryClient();
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [selectedTimezone, setSelectedTimezone] = useState("");
+  const [selectedWeekStart, setSelectedWeekStart] = useState(0);
   const [saved, setSaved] = useState(false);
 
   const { data: settings, isLoading: settingsLoading } = useQuery<UserSettings>({
@@ -58,10 +60,13 @@ export default function SettingsPage() {
     if (settings?.timezone) {
       setSelectedTimezone(settings.timezone);
     }
-  }, [settings?.timezone]);
+    if (settings?.weekStartDay !== undefined) {
+      setSelectedWeekStart(settings.weekStartDay);
+    }
+  }, [settings?.timezone, settings?.weekStartDay]);
 
   const updateMutation = useMutation({
-    mutationFn: async (data: { timezone: string }) => {
+    mutationFn: async (data: { timezone?: string; weekStartDay?: number }) => {
       const res = await fetch("/api/user/settings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -73,6 +78,7 @@ export default function SettingsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["userSettings"] });
       queryClient.invalidateQueries({ queryKey: ["currentWeek"] });
+      queryClient.invalidateQueries({ queryKey: ["weeks"] });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     },
@@ -82,6 +88,11 @@ export default function SettingsPage() {
     const newTimezone = e.target.value;
     setSelectedTimezone(newTimezone);
     updateMutation.mutate({ timezone: newTimezone });
+  }
+
+  function handleWeekStartChange(newWeekStart: number) {
+    setSelectedWeekStart(newWeekStart);
+    updateMutation.mutate({ weekStartDay: newWeekStart });
   }
 
   if (status === "loading" || settingsLoading) {
@@ -173,6 +184,43 @@ export default function SettingsPage() {
             </div>
             <p className="text-xs mt-2" style={{ color: '#6A6A7A' }}>
               This affects when your daily and weekly habits reset.
+            </p>
+          </div>
+
+          {/* Week Start Day */}
+          <div className="pt-4" style={{ borderTop: '1px solid #2A2A38' }}>
+            <label className="flex items-center gap-2 text-sm font-semibold mb-3 uppercase tracking-wide" style={{ color: '#A0A0B0' }}>
+              <Calendar className="w-4 h-4" />
+              Week Starts On
+            </label>
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleWeekStartChange(0)}
+                disabled={updateMutation.isPending}
+                className="flex-1 py-3 rounded-md text-sm font-semibold uppercase tracking-wide transition-all disabled:opacity-50"
+                style={{
+                  backgroundColor: selectedWeekStart === 0 ? 'rgba(0, 240, 255, 0.2)' : '#22222E',
+                  color: selectedWeekStart === 0 ? '#00F0FF' : '#6A6A7A',
+                  border: `1px solid ${selectedWeekStart === 0 ? 'rgba(0, 240, 255, 0.5)' : '#3A3A48'}`,
+                }}
+              >
+                Sunday
+              </button>
+              <button
+                onClick={() => handleWeekStartChange(1)}
+                disabled={updateMutation.isPending}
+                className="flex-1 py-3 rounded-md text-sm font-semibold uppercase tracking-wide transition-all disabled:opacity-50"
+                style={{
+                  backgroundColor: selectedWeekStart === 1 ? 'rgba(0, 240, 255, 0.2)' : '#22222E',
+                  color: selectedWeekStart === 1 ? '#00F0FF' : '#6A6A7A',
+                  border: `1px solid ${selectedWeekStart === 1 ? 'rgba(0, 240, 255, 0.5)' : '#3A3A48'}`,
+                }}
+              >
+                Monday
+              </button>
+            </div>
+            <p className="text-xs mt-2" style={{ color: '#6A6A7A' }}>
+              Choose which day your week begins. This affects the dashboard and history views.
             </p>
           </div>
         </div>
