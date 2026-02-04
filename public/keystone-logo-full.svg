@@ -1,0 +1,17 @@
+<svg width="800" height="200" viewBox="0 0 800 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="logoGrad" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00F0FF"/>
+      <stop offset="100%" stop-color="#8B5CF6"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Shield icon scaled to fit -->
+  <g transform="translate(20, 8) scale(0.36)">
+    <path d="M256 24 L480 138 L480 330 L256 488 L32 330 L32 138 Z" fill="none" stroke="url(#logoGrad)" stroke-width="28" stroke-linejoin="round"/>
+    <path d="M272 128 L202 272 L258 272 L222 384 L316 244 L260 244 L296 128 Z" fill="url(#logoGrad)"/>
+  </g>
+
+  <!-- KEYSTONE wordmark -->
+  <text x="230" y="128" font-family="'Chakra Petch', 'Rajdhani', 'Segoe UI', sans-serif" font-size="72" font-weight="700" letter-spacing="0.06em" fill="#F0F0F5" text-transform="uppercase">KEYSTONE</text>
+</svg>

@@ -1,0 +1,21 @@
+{
+  "name": "Keystone",
+  "short_name": "Keystone",
+  "description": "Build systems and habits that lead to your goals",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#00F0FF",
+  "background_color": "#0A0A0F",
+  "display": "standalone",
+  "start_url": "/"
+}

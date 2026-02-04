@@ -3,7 +3,8 @@
 import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Eye, EyeOff, Loader2, CheckCircle, Zap } from "lucide-react";
+import { Eye, EyeOff, Loader2, CheckCircle } from "lucide-react";
+import Image from "next/image";
 
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
@@ -112,16 +113,8 @@ function ResetPasswordForm() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3 mb-8">
-            <div
-              className="w-12 h-12 rounded-md flex items-center justify-center"
-              style={{
-                background: 'linear-gradient(135deg, #00F0FF 0%, #8B5CF6 100%)',
-                boxShadow: '0 0 20px rgba(0, 240, 255, 0.3)'
-              }}
-            >
-              <Zap className="w-6 h-6" style={{ color: '#0A0A0F' }} />
-            </div>
-            <span className="text-2xl font-bold" style={{ color: '#F0F0F5' }}>Keystone</span>
+            <Image src="/keystone-icon.svg" alt="Keystone" width={48} height={48} className="drop-glow-primary" />
+            <span className="text-2xl font-bold text-gradient-power font-display tracking-wide">KEYSTONE</span>
           </Link>
           <h1 className="text-2xl font-bold" style={{ color: '#F0F0F5' }}>Set new password</h1>
           <p className="mt-2" style={{ color: '#A0A0B0' }}>Enter your new password below</p>

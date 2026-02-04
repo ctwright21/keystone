@@ -11,9 +11,9 @@ import {
   LogOut,
   Menu,
   X,
-  Zap,
   Shield,
 } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -40,10 +40,8 @@ export function DashboardNav() {
       <aside className="hidden md:flex flex-col w-64 bg-bg-deep border-r border-border-subtle fixed top-0 left-0 h-screen">
         <div className="p-6">
           <Link href="/dashboard" className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-power rounded-md flex items-center justify-center glow-primary">
-              <Zap className="w-5 h-5 text-text-inverse" />
-            </div>
-            <span className="text-xl font-bold text-text-primary">Keystone</span>
+            <Image src="/keystone-icon.svg" alt="Keystone" width={40} height={40} className="drop-glow-primary" />
+            <span className="text-xl font-bold text-gradient-power font-display tracking-wide">KEYSTONE</span>
           </Link>
         </div>
 
@@ -111,10 +109,8 @@ export function DashboardNav() {
       <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-bg-deep border-b border-border-subtle">
         <div className="flex items-center justify-between px-4 py-3">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-power rounded-md flex items-center justify-center">
-              <Zap className="w-4 h-4 text-text-inverse" />
-            </div>
-            <span className="text-lg font-bold text-text-primary">Keystone</span>
+            <Image src="/keystone-icon.svg" alt="Keystone" width={32} height={32} className="drop-glow-primary" />
+            <span className="text-lg font-bold text-gradient-power font-display tracking-wide">KEYSTONE</span>
           </Link>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

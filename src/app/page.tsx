@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Zap, Target, Trophy, TrendingUp, ArrowRight, Flame, Star } from "lucide-react";
@@ -16,10 +17,8 @@ export default async function HomePage() {
       <header className="container mx-auto px-4 py-6">
         <nav className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-power rounded-md flex items-center justify-center glow-primary">
-              <Zap className="w-5 h-5 text-text-inverse" />
-            </div>
-            <span className="text-2xl font-bold text-text-primary">Keystone</span>
+            <Image src="/keystone-icon.svg" alt="Keystone" width={40} height={40} className="drop-glow-primary" />
+            <span className="text-2xl font-bold text-gradient-power font-display tracking-wide">KEYSTONE</span>
           </div>
           <div className="flex items-center gap-4">
             <Link
@@ -171,10 +170,8 @@ export default async function HomePage() {
       <footer className="container mx-auto px-4 py-8 mt-20 border-t border-border-subtle">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-power rounded-md flex items-center justify-center">
-              <Zap className="w-4 h-4 text-text-inverse" />
-            </div>
-            <span className="text-text-secondary">Keystone</span>
+            <Image src="/keystone-icon.svg" alt="Keystone" width={32} height={32} className="drop-glow-primary" />
+            <span className="text-gradient-power font-display tracking-wide">KEYSTONE</span>
           </div>
           <p className="text-text-tertiary text-sm">
             &copy; {new Date().getFullYear()} Keystone. All rights reserved.

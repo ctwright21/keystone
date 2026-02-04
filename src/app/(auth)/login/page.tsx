@@ -4,7 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { Eye, EyeOff, Loader2, Zap } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -44,10 +45,8 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 bg-gradient-power rounded-md flex items-center justify-center glow-primary">
-              <Zap className="w-6 h-6 text-text-inverse" />
-            </div>
-            <span className="text-2xl font-bold text-text-primary">Keystone</span>
+            <Image src="/keystone-icon.svg" alt="Keystone" width={48} height={48} className="drop-glow-primary" />
+            <span className="text-2xl font-bold text-gradient-power font-display tracking-wide">KEYSTONE</span>
           </Link>
           <h1 className="text-2xl font-bold text-text-primary">Welcome back</h1>
           <p className="text-text-secondary mt-2">Sign in to continue your journey</p>

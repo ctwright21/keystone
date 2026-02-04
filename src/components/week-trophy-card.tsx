@@ -166,7 +166,7 @@ export function WeekTrophyCard() {
         <div className="flex items-center gap-4">
           <TrophyBadge tier={currentTier} size="lg" />
           <div>
-            <div className="font-bold text-2xl" style={{ color: getTrophyColor(currentTier) }}>
+            <div className="font-bold text-xl" style={{ color: getTrophyColor(currentTier) }}>
               {currentTier === "none" ? "No Trophy Yet" : `${getTrophyName(currentTier)} Trophy`}
             </div>
             <div className="text-sm" style={{ color: "#A0A0B0" }}>

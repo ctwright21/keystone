@@ -15,7 +15,9 @@
       "Bash(npx prisma db push:*)",
       "Bash(/opt/homebrew/opt/postgresql@15/bin/psql:*)",
       "Bash(npm run build:*)",
-      "Bash(npx tsx:*)"
+      "Bash(npx tsx:*)",
+      "Bash(ls:*)",
+      "Bash(grep:*)"
     ]
   }
 }
